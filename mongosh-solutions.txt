@@ -1,0 +1,80 @@
+use library
+
+db.createCollection("books", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["title"],
+      properties: {
+        title: {
+          bsonType: "string",
+          minLength: 1,
+          description: "must be a non-empty string"
+        }
+      }
+    }
+  }
+})
+
+db.authors.insertOne({
+  name: "Author1",
+  nationality: "British"
+})
+
+db.createCollection("logs", {
+  capped: true,
+  size: 1048576
+})
+
+db.books.createIndex({ title: 1 })
+
+db.books.insertOne({
+  title: "Book1",
+  author: "Ali",
+  year: 1937,
+  genres: ["Fantasy", "Adventure"]
+})
+
+db.books.insertMany([
+  {
+    title: "Future",
+    author: "George Orwell",
+    year: 2020,
+    genres: ["Science Fiction"]
+  },
+  {
+    title: "To Kill a Mockingbird",
+    author: "Harper Lee",
+    year: 1960,
+    genres: ["Classic", "Fiction"]
+  },
+  {
+    title: "Brave New World",
+    author: "Aldous Huxley",
+    year: 2006,
+    genres: ["Dystopian", "Science Fiction"]
+  }
+])
+
+db.logs.insertOne({
+  book_id: "64b5c0b2f82c4a765ef0",
+  action: "borrowed"
+})
+
+db.books.updateOne(
+  { title: "Future" },
+  { $set: { year: 2022 } }
+)
+
+db.books.findOne({ title: "Brave New World" })
+
+db.books.find({
+  year: { $gte: 1990, $lte: 2010 }
+})
+
+db.books.find({ genres: "Science Fiction" })
+
+db.books.find()
+  .skip(2)
+  .limit(3)
+  .sort({ year: -1 })
